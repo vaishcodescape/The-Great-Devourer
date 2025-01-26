@@ -1,2 +1,2 @@
-# The-Great-Devourer
-The-Great-Devourer is a game made in C++
+# The-Great-Devourer 🐍
+The-Great-Devourer is a snake game 🐍 made in C++
