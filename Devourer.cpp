@@ -12,8 +12,8 @@ const char DIR_DOWN = 'D';
 const char DIR_LEFT = 'L';
 const char DIR_RIGHT = 'R';
 
-const char GREAT_DEVOURER = 'X';
-const char FOOD = 'o';
+const char GREAT_DEVOURER = '>';
+const char FOOD = '*';
 
 int consoleWidth, consoleHeight;
 
