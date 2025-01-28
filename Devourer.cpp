@@ -34,7 +34,7 @@ void initScreen()
 }
 
 // Function to print the ASCII art pattern
-void printAsciiArt() {
+printthegreatdevourer() {
     cout << "*****  *   *   ****  ****   *****  *****  *****     ****   *****  *   *  ***  *   *  ****   *****  ****  " << endl;
     cout << "  *    *   *  *      *   *  *      *   *    *       *   *  *      *   * *   * *   *  *   *  *      *   * " << endl;
     cout << "  *    *****  *  **  ****   ****   *****    *       *   *  ****   *   * *   * *   *  ****   ****   ****  " << endl;
@@ -267,7 +267,7 @@ int main() {
     initScreen();  // Set up console screen dimensions
 
     // Print ASCII art before the game starts
-    printAsciiArt();
+    printthegreatdevourer();
 
     Board *board = new Board();  // Create the game board
     cout << "Welcome to Snake Game!" << endl;
