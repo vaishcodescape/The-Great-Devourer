@@ -1,17 +1,21 @@
 //The-Great-Devourer Snake Game
 //Made by: vaishcodescape and sam5506
-
-#include <bits/stdc++.h>
-#include <conio.h>
-#include <windows.h>
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <termios.h>
+#include <unistd.h>
+#include <sys/ioctl.h>
 
 using namespace std;
+
 #define MAX_LENGTH 1000
 
 const char DIR_UP = 'U';
 const char DIR_DOWN = 'D';
 const char DIR_LEFT = 'L';
 const char DIR_RIGHT = 'R';
+
 void printsnake()
 {
     cout << " TTTTT  H   H  EEEEE      GGG   RRRR    EEEEE   AAAAA   TTTTT      DDDD   EEEEE   V     V  OOO   U   U  RRRR    EEEEE   RRRR   \n";
@@ -21,48 +25,43 @@ void printsnake()
     cout << "   T    H   H  EEEEE      GGG    R  R    EEEEE   A   A    T        DDDD   EEEEE      V     OOO    UUU   R   R   EEEEE   R   R  \n";
 
     cout << "Press Enter to Continue.....";
-    cin >>;
+    cin.ignore();
 }
 
 int consoleWidth, consoleHeight;
 
 void initScreen()
 {
-    HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
-    CONSOLE_SCREEN_BUFFER_INFO csbi;
-    GetConsoleScreenBufferInfo(hConsole, &csbi);
-    consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
-    consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    struct winsize w;
+    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+    consoleWidth = w.ws_col;
+    consoleHeight = w.ws_row;
 }
 
-struct coord{
-    int xcoord;
-    int ycoord;
-    Point()
-    {
+struct Point
+{
+    int xCoord;
+    int yCoord;
 
-    }
-    Point(int x, int y){
-        xcoord = x;
-        ycoord = y;
+    Point() : xCoord(0), yCoord(0) {}
 
-    }
-
+    Point(int x, int y) : xCoord(x), yCoord(y) {}
 };
 
-class Snake{
-    private:
+class Snake
+{
+private:
     int length;
     char direction;
 
-    public:
+public:
     Point body[MAX_LENGTH];
-    Snake(int x,int y)
+
+    Snake(int x, int y)
     {
         length = 1;
-        body[0] = Point(x,y);
+        body[0] = Point(x, y);
         direction = DIR_RIGHT;
-
     }
 
     int getLength()
@@ -71,68 +70,88 @@ class Snake{
     }
 
     void changeDirection(char newDirection)
-{
-    switch (newDirection)
     {
+        switch (newDirection)
+        {
         case DIR_UP:
             if (direction != DIR_DOWN)
-            {
                 direction = newDirection;
-            }
             break;
-
         case DIR_DOWN:
             if (direction != DIR_UP)
-            {
                 direction = newDirection;
-            }
             break;
-
         case DIR_LEFT:
             if (direction != DIR_RIGHT)
-            {
                 direction = newDirection;
-            }
             break;
-
         case DIR_RIGHT:
             if (direction != DIR_LEFT)
-            {
                 direction = newDirection;
-            }
             break;
-
         default:
-            
             break;
+        }
     }
+
     bool move(Point food)
     {
-        for(int i = length -1 ;i>0;i--)
+        for (int i = length - 1; i > 0; i--)
         {
-            body[i] = body[i-1];
-            
+            body[i] = body[i - 1];
         }
 
+        switch (direction)
+        {
+        case DIR_UP:
+            body[0].yCoord--;
+            break;
+        case DIR_DOWN:
+            body[0].yCoord++;
+            break;
+        case DIR_LEFT:
+            body[0].xCoord--;
+            break;
+        case DIR_RIGHT:
+            body[0].xCoord++;
+            break;
+        }
+
+        if (body[0].xCoord == food.xCoord && body[0].yCoord == food.yCoord)
+        {
+            length++;
+            return true;
+        }
+
+        return false;
     }
-}
 };
 
-class Board{
-    private:
+class Board
+{
+private:
     Snake *snake;
-    const char SNAKE_BODY = "^";
     Point food;
-    const char FOOD = "*"
     int score;
 
-    public:
-    Board(){
-        spawnFood();
-        snake = new Snake(10,10);
-        score = 0;
-
+    void gotoxy(int x, int y)
+    {
+        cout << "\033[" << y << ";" << x << "H";
     }
+
+    void clearScreen()
+    {
+        cout << "\033[2J\033[H";
+    }
+
+public:
+    Board()
+    {
+        spawnFood();
+        snake = new Snake(10, 10);
+        score = 0;
+    }
+
     ~Board()
     {
         delete snake;
@@ -147,40 +166,48 @@ class Board{
     {
         int x = rand() % consoleWidth;
         int y = rand() % consoleHeight;
-        food = Point(x,y);
-
+        food = Point(x, y);
     }
 
-    void gotoxy(int x, int y)
+    void draw()
     {
-        COORD coord;
-        coord.X = x;
-        coord.Y = y;
-        SetConsoleCursorPostion(GetStdHandle(STD_OUTPUT_HANDLE),coord);
-
-    }
-
-     void draw(){
-        system("cls");
-        for(int i=0;i<snake->getLength();i++)
+        clearScreen();
+        for (int i = 0; i < snake->getLength(); i++)
         {
             gotoxy(snake->body[i].xCoord, snake->body[i].yCoord);
-            cout<<SNAKE_BODY;
+            cout << "^";
         }
 
         gotoxy(food.xCoord, food.yCoord);
-        cout<<FOOD;
+        cout << "*";
 
-        displayCurrentScore();
+        gotoxy(0, consoleHeight);
+        cout << "Score: " << score << endl;
     }
 
-
-
+    void update()
+    {
+        if (snake->move(food))
+        {
+            score++;
+            spawnFood();
+        }
+    }
 };
+
 int main()
 {
     printsnake();
     initScreen();
     Board *board = new Board();
+
+    while (true)
+    {
+        board->draw();
+        usleep(100000); // Delay to control game speed
+        board->update();
+    }
+
+    delete board;
     return 0;
 }
