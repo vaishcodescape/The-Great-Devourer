@@ -1,4 +1,6 @@
- #include <iostream>
+//THE GREAT DEVOURER SNAKE GAME
+//Made by vaishcodescape and sam5506
+
 #include <bits/stdc++.h>
 #include <conio.h> // key press kbhit
 #include <windows.h>
