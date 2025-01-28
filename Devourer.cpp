@@ -2,212 +2,189 @@
 //Made by: vaishcodescape and sam5506
 #include <iostream>
 #include <vector>
+#include <thread>
+#include <chrono>
 #include <cstdlib>
 #include <termios.h>
 #include <unistd.h>
-#include <sys/ioctl.h>
 
 using namespace std;
 
 #define MAX_LENGTH 1000
 
+// Directions
 const char DIR_UP = 'U';
 const char DIR_DOWN = 'D';
 const char DIR_LEFT = 'L';
 const char DIR_RIGHT = 'R';
 
-void printsnake()
-{
-    cout << " TTTTT  H   H  EEEEE      GGG   RRRR    EEEEE   AAAAA   TTTTT      DDDD   EEEEE   V     V  OOO   U   U  RRRR    EEEEE   RRRR   \n";
-    cout << "   T    H   H  E          G      R   R   E       A   A    T        D   D  E        V   V  O   O  U   U  R   R   E       R   R  \n";
-    cout << "   T    HHHHH  EEEE       G  GG  RRRR    EEEE    AAAAA    T        D   D  EEEE       V    O   O  U   U  RRRR    EEEE    RRRR   \n";
-    cout << "   T    H   H  E          G   G  R  R    E       A   A    T        D   D  E        V   V  O   O  U   U  R  R    E       R  R   \n";
-    cout << "   T    H   H  EEEEE      GGG    R  R    EEEEE   A   A    T        DDDD   EEEEE      V     OOO    UUU   R   R   EEEEE   R   R  \n";
+int consoleWidth = 40, consoleHeight = 20;  // Console dimensions
 
-    cout << "Press Enter to Continue.....";
-    cin.ignore();
-}
-
-int consoleWidth, consoleHeight;
-
-void initScreen()
-{
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    consoleWidth = w.ws_col;
-    consoleHeight = w.ws_row;
-}
-
-struct Point
-{
-    int xCoord;
-    int yCoord;
-
-    Point() : xCoord(0), yCoord(0) {}
-
-    Point(int x, int y) : xCoord(x), yCoord(y) {}
+// Point structure
+struct Point {
+    int x, y;
+    Point(int x = 0, int y = 0) : x(x), y(y) {}
 };
 
-class Snake
-{
-private:
-    int length;
+// Snake class
+class Snake {
     char direction;
-
 public:
-    Point body[MAX_LENGTH];
+    vector<Point> body;
 
-    Snake(int x, int y)
-    {
-        length = 1;
-        body[0] = Point(x, y);
+    Snake(int x, int y) {
+        body.push_back(Point(x, y));
         direction = DIR_RIGHT;
     }
 
-    int getLength()
-    {
-        return length;
-    }
-
-    void changeDirection(char newDirection)
-    {
-        switch (newDirection)
-        {
-        case DIR_UP:
-            if (direction != DIR_DOWN)
-                direction = newDirection;
-            break;
-        case DIR_DOWN:
-            if (direction != DIR_UP)
-                direction = newDirection;
-            break;
-        case DIR_LEFT:
-            if (direction != DIR_RIGHT)
-                direction = newDirection;
-            break;
-        case DIR_RIGHT:
-            if (direction != DIR_LEFT)
-                direction = newDirection;
-            break;
-        default:
-            break;
+    void changeDirection(char newDirection) {
+        if ((newDirection == DIR_UP && direction != DIR_DOWN) ||
+            (newDirection == DIR_DOWN && direction != DIR_UP) ||
+            (newDirection == DIR_LEFT && direction != DIR_RIGHT) ||
+            (newDirection == DIR_RIGHT && direction != DIR_LEFT)) {
+            direction = newDirection;
         }
     }
 
-    bool move(Point food)
-    {
-        for (int i = length - 1; i > 0; i--)
-        {
-            body[i] = body[i - 1];
+    bool move(Point food) {
+        Point newHead = body[0];
+
+        // Update head position
+        switch (direction) {
+            case DIR_UP: newHead.y--; break;
+            case DIR_DOWN: newHead.y++; break;
+            case DIR_LEFT: newHead.x--; break;
+            case DIR_RIGHT: newHead.x++; break;
         }
 
-        switch (direction)
-        {
-        case DIR_UP:
-            body[0].yCoord--;
-            break;
-        case DIR_DOWN:
-            body[0].yCoord++;
-            break;
-        case DIR_LEFT:
-            body[0].xCoord--;
-            break;
-        case DIR_RIGHT:
-            body[0].xCoord++;
-            break;
+        // Check for self-collision
+        for (const auto& segment : body) {
+            if (segment.x == newHead.x && segment.y == newHead.y) {
+                return false;
+            }
         }
 
-        if (body[0].xCoord == food.xCoord && body[0].yCoord == food.yCoord)
-        {
-            length++;
-            return true;
+        body.insert(body.begin(), newHead);
+
+        // Check for food
+        if (newHead.x == food.x && newHead.y == food.y) {
+            return true;  // Food eaten, don't remove tail
         }
 
-        return false;
+        body.pop_back();  // Remove tail if food not eaten
+        return true;
     }
 };
 
-class Board
-{
-private:
-    Snake *snake;
+// Board class
+class Board {
+    Snake snake;
     Point food;
     int score;
 
-    void gotoxy(int x, int y)
-    {
-        cout << "\033[" << y << ";" << x << "H";
+    void gotoxy(int x, int y) {
+        cout << "\033[" << y + 1 << ";" << x + 1 << "H";
     }
 
-    void clearScreen()
-    {
+    void clearScreen() {
         cout << "\033[2J\033[H";
     }
 
+    void spawnFood() {
+        bool valid = false;
+        while (!valid) {
+            int x = rand() % consoleWidth;
+            int y = rand() % consoleHeight;
+            valid = true;
+
+            // Ensure food doesn't spawn inside the snake
+            for (const auto& segment : snake.body) {
+                if (segment.x == x && segment.y == y) {
+                    valid = false;
+                    break;
+                }
+            }
+
+            if (valid) {
+                food = Point(x, y);
+            }
+        }
+    }
+
 public:
-    Board()
-    {
+    Board() : snake(consoleWidth / 2, consoleHeight / 2), score(0) {
         spawnFood();
-        snake = new Snake(10, 10);
-        score = 0;
     }
 
-    ~Board()
-    {
-        delete snake;
-    }
-
-    int getScore()
-    {
-        return score;
-    }
-
-    void spawnFood()
-    {
-        int x = rand() % consoleWidth;
-        int y = rand() % consoleHeight;
-        food = Point(x, y);
-    }
-
-    void draw()
-    {
+    void draw() {
         clearScreen();
-        for (int i = 0; i < snake->getLength(); i++)
-        {
-            gotoxy(snake->body[i].xCoord, snake->body[i].yCoord);
-            cout << "^";
+
+        // Draw snake
+        for (const auto& segment : snake.body) {
+            gotoxy(segment.x, segment.y);
+            cout << "O";
         }
 
-        gotoxy(food.xCoord, food.yCoord);
-        cout << "*";
+        // Draw food
+        gotoxy(food.x, food.y);
+        cout << "o";
 
+        // Display score
         gotoxy(0, consoleHeight);
-        cout << "Score: " << score << endl;
+        cout << "Score: " << score;
     }
 
-    void update()
-    {
-        if (snake->move(food))
-        {
+    bool update() {
+        if (!snake.move(food)) {
+            return false;
+        }
+
+        // Check if food is eaten
+        if (snake.body[0].x == food.x && snake.body[0].y == food.y) {
             score++;
             spawnFood();
         }
+
+        return true;
+    }
+
+    void getInput() {
+        struct termios oldt, newt;
+        tcgetattr(STDIN_FILENO, &oldt);
+        newt = oldt;
+        newt.c_lflag &= ~(ICANON | ECHO);
+        tcsetattr(STDIN_FILENO, TCSANOW, &newt);
+
+        char key;
+        if (read(STDIN_FILENO, &key, 1) == 1) {
+            if (key == 'w') snake.changeDirection(DIR_UP);
+            else if (key == 'a') snake.changeDirection(DIR_LEFT);
+            else if (key == 's') snake.changeDirection(DIR_DOWN);
+            else if (key == 'd') snake.changeDirection(DIR_RIGHT);
+        }
+
+        tcsetattr(STDIN_FILENO, TCSANOW, &oldt);
+    }
+
+    int getScore() const {
+        return score;
     }
 };
 
-int main()
-{
-    printsnake();
-    initScreen();
-    Board *board = new Board();
+// Main function
+int main() {
+    srand(time(0));
+    Board board;
 
-    while (true)
-    {
-        board->draw();
-        usleep(100000); // Delay to control game speed
-        board->update();
+    while (true) {
+        board.draw();
+        if (!board.update()) {
+            break;
+        }
+        board.getInput();
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    delete board;
+    cout << "Game Over! Final Score: " << board.getScore() << endl;
     return 0;
 }
