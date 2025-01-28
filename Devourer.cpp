@@ -17,7 +17,7 @@ const char DIR_LEFT = 'L';
 const char DIR_RIGHT = 'R';
 
 // Special characters for the Great Devourer and food
-const char GREAT_DEVOURER = '>';
+const char GREAT_DEVOURER = '->';
 const char FOOD = '*';
 
 // The size of the console screen
