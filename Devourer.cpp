@@ -64,6 +64,24 @@ void printAsciiArt() {
     cout << "   T    H   H  E          G   G  R  R    E       A   A    T        D   D  E        V   V  O   O  U   U  R  R    E       R  R   \n";
     cout << "   T    H   H  EEEEE      GGG    R  R    EEEEE   A   A    T        DDDD   EEEEE      V     OOO    UUU   R   R   EEEEE   R   R  \n";
     cout << endl;
+    
+    cout << "  ---_ ......._-_--.\n";
+    cout << "      (|\\ /      / /| \\  \\\n";
+    cout << "      /  /     .'  -=-'   `.\n";
+    cout << "     /  /    .'             )\n";
+    cout << "   _/  /   .'        _.)   /\n";
+    cout << "  / o   o        _.-' /  .'\n";
+    cout << "  \\          _.-'    / .'*|\n";
+    cout << "   \\______.-'//    .'.' \\*|\n";
+    cout << "    \\|  \\ | //   .'.' _ |*|\n";
+    cout << "     `   \\|//  .'.'_ _ _|*|\n";
+    cout << "      .  .// .'.' | _ _ \\*|\n";
+    cout << "      \\`-|\\_/ /    \\ _ _ \\*\\\n";
+    cout << "       `/'\\__/      \\ _ _ \\*\\\n";
+    cout << "      /^|            \\ _ _ \\*\n";
+    cout << "     '  `             \\ _ _ \\n";
+    
+    cout << endl;
     cout << "THE GREAT DEVOURER" << endl;
     cout << "Snake Game" << endl;
     cout << "Made by vaishcodescape and sam5506";
