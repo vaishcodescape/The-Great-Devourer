@@ -44,6 +44,8 @@ void printAsciiArt(){
     cout << "     '  `             \\ _ _ \\n";
 
     cout << "THE GREAT DEVOURER" << endl;
+    cout << "Snake Game" << endl;
+    cout << "Made by vaishcodescape and sam5506";
 }
 
 struct Point {
