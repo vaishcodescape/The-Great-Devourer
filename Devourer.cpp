@@ -1,7 +1,13 @@
 #include <iostream>
-#include <bits/stdc++.h>
-#include <conio.h>
+#include <cstdlib>
+#include <ctime>
+#include <thread>
+#include <chrono>
+#ifdef _WIN32
 #include <windows.h>
+#else
+#include <ncurses.h>
+#endif
 
 using namespace std;
 
@@ -15,18 +21,27 @@ const char DIR_RIGHT = 'R';
 const char GREAT_DEVOURER = '>';
 const char FOOD = '*';
 
-int consoleWidth, consoleHeight;
+int consoleWidth = 50, consoleHeight = 20; // Fixed console dimensions
 
 void initScreen()
 {
+    #ifdef _WIN32
+    // Windows-specific screen initialization
     HANDLE hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
     CONSOLE_SCREEN_BUFFER_INFO csbi;
     GetConsoleScreenBufferInfo(hConsole, &csbi);
     consoleHeight = csbi.srWindow.Bottom - csbi.srWindow.Top + 1;
     consoleWidth = csbi.srWindow.Right - csbi.srWindow.Left + 1;
+    #else
+    // ncurses initialization for Linux/Mac
+    initscr();
+    cbreak();
+    noecho();
+    curs_set(0);
+    #endif
 }
 
-void printAsciiArt(){
+void printAsciiArt() {
     cout << "  ---_ ......._-_--.\n";
     cout << "      (|\\ /      / /| \\  \\\n";
     cout << "      /  /     .'  -=-'   `.\n";
@@ -130,6 +145,10 @@ public:
             length += 3;
         }
 
+        if (body[0].xCoord < 0 || body[0].xCoord >= consoleWidth || body[0].yCoord < 0 || body[0].yCoord >= consoleHeight) {
+            return false;
+        }
+
         return true;
     }
 };
@@ -157,33 +176,39 @@ public:
     }
 
     void spawnFood() {
-        int x = rand() % consoleWidth;
-        int y = rand() % consoleHeight;
-
-        food = Point(x, y);
+        food = Point(rand() % consoleWidth, rand() % consoleHeight);
     }
 
     void spawnGreatDevourer() {
-        int x = rand() % consoleWidth;
-        int y = rand() % consoleHeight;
-
-        greatDevourer = Point(x, y);
+        greatDevourer = Point(rand() % consoleWidth, rand() % consoleHeight);
     }
 
     void displayCurrentScore() {
+        #ifdef _WIN32
         gotoxy(consoleWidth / 2, 0);
         cout << "Current Score: " << score;
+        #else
+        mvprintw(0, consoleWidth / 2, "Current Score: %d", score);
+        #endif
     }
 
     void gotoxy(int x, int y) {
+        #ifdef _WIN32
         COORD coord;
         coord.X = x;
         coord.Y = y;
         SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+        #else
+        move(y, x);
+        #endif
     }
 
     void draw() {
+        #ifdef _WIN32
         system("cls");
+        #else
+        clear();
+        #endif
 
         for (int i = 0; i < snake->getLength(); i++) {
             gotoxy(snake->body[i].xCoord, snake->body[i].yCoord);
@@ -217,8 +242,8 @@ public:
     }
 
     void getInput() {
-        if (kbhit()) {
-            int key = getch();
+        if (_kbhit()) {
+            int key = _getch();
             switch (key) {
                 case 'w': case 'W':
                     snake->changeDirection(DIR_UP);
@@ -247,17 +272,6 @@ int main() {
     cout << "Welcome to Snake Game!" << endl;
     cout << "Use WASD keys to control the snake." << endl;
     cout << "Press any key to start..." << endl;
-    getch();
+    _getch();
 
-    while (board->update()) {
-        board->getInput();
-        board->draw();
-        Sleep(100);
-    }
-
-    cout << "\nGame Over!" << endl;
-    cout << "Final score: " << board->getScore() << endl;
-
-    delete board;
-    return 0;
-}
+   
