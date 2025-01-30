@@ -1,3 +1,4 @@
+//The Great Devourer Snake Game
 #include <iostream>
 #include <cstdlib>
 #include <ctime>
@@ -5,59 +6,56 @@
 #include <chrono>
 
 #ifdef _WIN32
-#include <conio.h>  // Windows specific for non-buffered input
+#include <conio.h>  
 #else
-#include <termios.h>  // macOS/Linux specific for terminal control
-#include <unistd.h>   // For sleep function
+#include <termios.h>   
+#include <unistd.h>    
 #endif
 
 using namespace std;
 
-#define MAX_LENGTH 1000
+#define MAX_SIZE 1000
 
-const char DIR_UP = 'U';
-const char DIR_DOWN = 'D';
-const char DIR_LEFT = 'L';
-const char DIR_RIGHT = 'R';
+const char UP = 'U';
+const char DOWN = 'D';
+const char LEFT = 'L';
+const char RIGHT = 'R';
 
-const char SNAKE_BODY = '*';
-const char FOOD = 'O';
+const char SNAKE_CHAR = '*';
+const char FOOD_CHAR = 'O';
 
-int consoleWidth = 50, consoleHeight = 20; // Fixed console dimensions
+int screenWidth = 50, screenHeight = 20;  
 
-// Platform-specific functions for getting raw input
 #ifdef _WIN32
-// Windows platform
-int getKey() {
+int getKeyPress() {
     if (_kbhit()) {
         return _getch();
     }
-    return -1; // No key pressed
+    return -1;  
 }
 #else
-// macOS/Linux platform
-int getKey() {
-    struct termios oldt, newt;
-    int ch;
-    tcgetattr(STDIN_FILENO, &oldt); // Get the terminal settings
-    newt = oldt;
-    newt.c_lflag &= ~(ICANON | ECHO); // Disable buffering and echo
-    tcsetattr(STDIN_FILENO, TCSANOW, &newt); // Set the terminal to raw mode
-    ch = getchar(); // Read character
-    tcsetattr(STDIN_FILENO, TCSANOW, &oldt); // Restore terminal settings
-    return ch;
+int getKeyPress() {
+    struct termios old, current;
+    int character;
+    tcgetattr(STDIN_FILENO, &old);  
+    current = old;
+    current.c_lflag &= ~(ICANON | ECHO);  
+    tcsetattr(STDIN_FILENO, TCSANOW, &current);  
+    character = getchar();  
+    tcsetattr(STDIN_FILENO, TCSANOW, &old);  
+    return character;
 }
 #endif
 
-void initScreen() {
+void clearScreen() {
 #ifdef _WIN32
-    system("cls"); // Clear screen (Windows)
+    system("cls");  
 #else
-    system("clear"); // Clear screen (macOS/Linux)
+    system("clear");  
 #endif
 }
 
-void printAsciiArt() {
+void displayTitle() {
     cout << " TTTTT  H   H  EEEEE      GGG   RRRR    EEEEE   AAAAA   TTTTT      DDDD   EEEEE   V     V  OOO   U   U  RRRR    EEEEE   RRRR   \n";
     cout << "   T    H   H  E          G      R   R   E       A   A    T        D   D  E        V   V  O   O  U   U  R   R   E       R   R  \n";
     cout << "   T    HHHHH  EEEE       G  GG  RRRR    EEEE    AAAAA    T        D   D  EEEE       V    O   O  U   U  RRRR    EEEE    RRRR   \n";
@@ -84,158 +82,150 @@ void printAsciiArt() {
     cout << endl;
     cout << "THE GREAT DEVOURER" << endl;
     cout << "Snake Game" << endl;
-    cout << "Made by vaishcodescape and sam5506";
+    cout << "Created by vaishcodescape and sam5506";
 }
 
-struct Point {
-    int xCoord;
-    int yCoord;
+struct Coordinates {
+    int x;
+    int y;
 
-    Point() {}
+    Coordinates() {}
 
-    Point(int x, int y) {
-        xCoord = x;
-        yCoord = y;
+    Coordinates(int a, int b) {
+        x = a;
+        y = b;
     }
 };
 
-class Snake {
-    int length;
-    char direction;
+class SnakeGame {
+    int currentLength;
+    char currentDirection;
 
 public:
-    Point body[MAX_LENGTH];
+    Coordinates body[MAX_SIZE];
 
-    Snake(int x, int y) {
-        length = 1;
-        body[0] = Point(x, y);
-        direction = DIR_RIGHT;
+    SnakeGame(int x, int y) {
+        currentLength = 1;
+        body[0] = Coordinates(x, y);
+        currentDirection = RIGHT;
     }
 
-    int getLength() {
-        return length;
+    int getCurrentLength() {
+        return currentLength;
     }
 
-    void changeDirection(char newDirection) {
-        switch (newDirection) {
-            case DIR_UP:
-                if (direction != DIR_DOWN) direction = DIR_UP;
+    void updateDirection(char newDir) {
+        switch (newDir) {
+            case UP:
+                if (currentDirection != DOWN) currentDirection = UP;
                 break;
-            case DIR_DOWN:
-                if (direction != DIR_UP) direction = DIR_DOWN;
+            case DOWN:
+                if (currentDirection != UP) currentDirection = DOWN;
                 break;
-            case DIR_LEFT:
-                if (direction != DIR_RIGHT) direction = DIR_LEFT;
+            case LEFT:
+                if (currentDirection != RIGHT) currentDirection = LEFT;
                 break;
-            case DIR_RIGHT:
-                if (direction != DIR_LEFT) direction = DIR_RIGHT;
+            case RIGHT:
+                if (currentDirection != LEFT) currentDirection = RIGHT;
                 break;
         }
     }
 
-    bool move(Point food) {
-        // Move the body of the snake
-        for (int i = length - 1; i > 0; i--) {
-            body[i] = body[i - 1]; // Shift body parts
+    bool makeMove(Coordinates food) {
+        for (int i = currentLength - 1; i > 0; i--) {
+            body[i] = body[i - 1];  
         }
 
-        // Move the head of the snake based on direction
-        switch (direction) {
-            case DIR_UP:
-                body[0].yCoord--;
+        switch (currentDirection) {
+            case UP:
+                body[0].y--;
                 break;
-            case DIR_DOWN:
-                body[0].yCoord++;
+            case DOWN:
+                body[0].y++;
                 break;
-            case DIR_RIGHT:
-                body[0].xCoord++;
+            case RIGHT:
+                body[0].x++;
                 break;
-            case DIR_LEFT:
-                body[0].xCoord--;
+            case LEFT:
+                body[0].x--;
                 break;
         }
 
-        // Check if snake collides with itself
-        for (int i = 1; i < length; i++) {
-            if (body[0].xCoord == body[i].xCoord && body[0].yCoord == body[i].yCoord) {
-                return false; // Snake collides with itself
+        for (int i = 1; i < currentLength; i++) {
+            if (body[0].x == body[i].x && body[0].y == body[i].y) {
+                return false;
             }
         }
 
-        // Check if the snake eats food
-        if (food.xCoord == body[0].xCoord && food.yCoord == body[0].yCoord) {
-            body[length] = Point(body[length - 1].xCoord, body[length - 1].yCoord); // Add new segment to the tail
-            length++; // Increase length
+        if (food.x == body[0].x && food.y == body[0].y) {
+            body[currentLength] = Coordinates(body[currentLength - 1].x, body[currentLength - 1].y);
+            currentLength++;
         }
 
-        // Check if snake collides with the borders
-        if (body[0].xCoord < 0 || body[0].xCoord >= consoleWidth || body[0].yCoord < 0 || body[0].yCoord >= consoleHeight) {
-            return false; // Snake hits border
+        if (body[0].x < 0 || body[0].x >= screenWidth || body[0].y < 0 || body[0].y >= screenHeight) {
+            return false;
         }
 
         return true;
     }
 };
-class Board {
-    Snake *snake;
-    Point food;
-    int score;
+
+class GameBoard {
+    SnakeGame *snake;
+    Coordinates foodItem;
+    int scoreCount;
 
 public:
-    Board() {
-        spawnFood();  // Spawn the first food item
-        // Place snake in the center of the screen
-        snake = new Snake(consoleWidth / 2, consoleHeight / 2);
-        score = 0;
+    GameBoard() {
+        generateFood();  
+        snake = new SnakeGame(screenWidth / 2, screenHeight / 2);
+        scoreCount = 0;
     }
 
-    ~Board() {
+    ~GameBoard() {
         delete snake;
     }
 
-    int getScore() {
-        return score;
+    int getCurrentScore() {
+        return scoreCount;
     }
 
-    void spawnFood() {
-        // Randomly place the food in the game area
-        food = Point(rand() % (consoleWidth - 2) + 1, rand() % (consoleHeight - 2) + 1);
+    void generateFood() {
+        foodItem = Coordinates(rand() % (screenWidth - 2) + 1, rand() % (screenHeight - 2) + 1);
     }
 
-    void displayCurrentScore() {
-        cout << "Current Score: " << score << endl; // Display score at the top
+    void displayScore() {
+        cout << "Score: " << scoreCount << endl;
     }
 
-    void draw() {
-        initScreen();  // Clear the screen
+    void renderBoard() {
+        clearScreen();  
 
-        // Draw the border
-        for (int i = 0; i < consoleWidth + 2; i++) {
+        for (int i = 0; i < screenWidth + 2; i++) {
             cout << "#";
         }
         cout << endl;
 
-        // Draw the game area with border
-        for (int y = 0; y < consoleHeight; y++) {
-            for (int x = 0; x < consoleWidth; x++) {
-                if (x == 0 || x == consoleWidth - 1) {
-                    cout << "#"; // Left and right border
-                } else if (y == 0 || y == consoleHeight - 1) {
-                    cout << "#"; // Top and bottom border
+        for (int y = 0; y < screenHeight; y++) {
+            for (int x = 0; x < screenWidth; x++) {
+                if (x == 0 || x == screenWidth - 1) {
+                    cout << "#"; 
+                } else if (y == 0 || y == screenHeight - 1) {
+                    cout << "#"; 
                 } else {
-                    bool snakePrinted = false;
-                    for (int i = 0; i < snake->getLength(); i++) {
-                        if (snake->body[i].xCoord == x && snake->body[i].yCoord == y) {
-                            cout << SNAKE_BODY; // Snake body
-                            snakePrinted = true;
+                    bool isSnakePrinted = false;
+                    for (int i = 0; i < snake->getCurrentLength(); i++) {
+                        if (snake->body[i].x == x && snake->body[i].y == y) {
+                            cout << SNAKE_CHAR; 
+                            isSnakePrinted = true;
                             break;
                         }
                     }
-                    if (!snakePrinted) {
-                        if (food.xCoord == x && food.yCoord == y) {
-                            cout << FOOD; // Food
+                    if (!isSnakePrinted) {
+                        if (foodItem.x == x && foodItem.y == y) {
+                            cout << FOOD_CHAR; 
                         } else {
-                            cout << " "; // Empty space
+                            cout << " "; 
                         }
                     }
                 }
@@ -243,42 +233,40 @@ public:
             cout << endl;
         }
 
-        // Draw the border bottom
-        for (int i = 0; i < consoleWidth + 2; i++) {
+        for (int i = 0; i < screenWidth + 2; i++) {
             cout << "#";
         }
         cout << endl;
 
-        displayCurrentScore();
+        displayScore();
     }
 
-    bool update() {
-        bool isAlive = snake->move(food);
-        if (!isAlive) return false;
+    bool updateBoard() {
+        bool alive = snake->makeMove(foodItem);
+        if (!alive) return false;
 
-        // If the snake eats food, increase the score and spawn a new food item
-        if (food.xCoord == snake->body[0].xCoord && food.yCoord == snake->body[0].yCoord) {
-            score++;  // Increase score
-            spawnFood();  // Spawn a new food item at a random location
+        if (foodItem.x == snake->body[0].x && foodItem.y == snake->body[0].y) {
+            scoreCount++;
+            generateFood();
         }
 
         return true;
     }
 
-    void getInput() {
-        int key = getKey();
-        switch (key) {
+    void processInput() {
+        int keyPress = getKeyPress();
+        switch (keyPress) {
             case 'w': case 'W':
-                snake->changeDirection(DIR_UP);
+                snake->updateDirection(UP);
                 break;
             case 'a': case 'A':
-                snake->changeDirection(DIR_LEFT);
+                snake->updateDirection(LEFT);
                 break;
             case 's': case 'S':
-                snake->changeDirection(DIR_DOWN);
+                snake->updateDirection(DOWN);
                 break;
             case 'd': case 'D':
-                snake->changeDirection(DIR_RIGHT);
+                snake->updateDirection(RIGHT);
                 break;
         }
     }
@@ -286,23 +274,22 @@ public:
 
 int main() {
     srand(time(0));
-    initScreen();
+    clearScreen();
 
-    printAsciiArt();
+    displayTitle();
 
-    Board *board = new Board();
-    cout << "Welcome to Snake Game!" << endl;
-    cout << "Use WASD keys to control the snake." << endl;
-    cout << "Press any key to start..." << endl;
-    getKey(); // Wait for input to start
+    GameBoard *game = new GameBoard();
+    cout << "Snake Game: Use AWSD to play." << endl;
+    cout << "Press any key to begin..." << endl;
+    getKeyPress();  
 
-    while (board->update()) {
-        board->draw();
-        board->getInput();
-        this_thread::sleep_for(chrono::milliseconds(100)); // Control game speed
+    while (game->updateBoard()) {
+        game->renderBoard();
+        game->processInput();
+        this_thread::sleep_for(chrono::milliseconds(100)); 
     }
 
-    cout << "Game Over! Final Score: " << board->getScore() << endl;
-    delete board;
+    cout << "Game Over! Final Score: " << game->getCurrentScore() << endl;
+    delete game;
     return 0;
 }
