@@ -82,7 +82,7 @@ void displayTitle() {
     cout << endl;
     cout << "THE GREAT DEVOURER" << endl;
     cout << "Snake Game" << endl;
-    cout << "Created by vaishcodescape and sam5506";
+    cout << "Created by vaishcodescape and sam5506"<< endl;
 }
 
 struct Coordinates {
