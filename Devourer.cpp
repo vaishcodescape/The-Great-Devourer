@@ -256,11 +256,11 @@ public:
     void processInput() {
         int keyPress = getKeyPress();
         switch (keyPress) {
-            case 'w': case 'W':
-                snake->updateDirection(UP);
-                break;
             case 'a': case 'A':
                 snake->updateDirection(LEFT);
+                break;
+            case 'w': case 'W':
+                snake->updateDirection(UP);
                 break;
             case 's': case 'S':
                 snake->updateDirection(DOWN);
