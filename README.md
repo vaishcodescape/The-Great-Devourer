@@ -24,6 +24,8 @@ SnakeGame Class:
 It manages the snake's body and movement.
 It keeps track of the snake’s current length and direction.
 It provides methods to update the snake’s position, grow when it eats food, and check for collisions (with the walls or itself).
+
+
 GameBoard Class:
 
 Manages the snake and the food.
@@ -31,6 +33,8 @@ Handles the rendering of the game screen.
 Tracks the score and generates food at random positions.
 Handles user input (WASD keys) for changing the snake's direction.
 Updates the game state after each move (checking if the snake collides with itself or with the walls, and updating the score if the snake eats food).
+
+
 5. Main Function (main)
 Initializes the game by calling displayTitle(), generating the initial game state, and displaying the instructions.
 The game loop starts, where:
@@ -39,6 +43,9 @@ The game state is rendered (renderBoard()).
 The user’s input is processed (processInput()).
 The game is paused briefly between each update using this_thread::sleep_for().
 If the snake collides with itself or the walls, the game ends, and the final score is displayed.
+
+
+
 Key Features:
 Snake Movement: The snake moves in four possible directions (up, down, left, right) based on user input (WASD keys).
 Snake Growth: Each time the snake eats food (represented by 'O'), it grows longer, and the score increases.
@@ -48,6 +55,9 @@ Gameplay Instructions:
 WASD: Control the snake’s movement (W = up, A = left, S = down, D = right).
 Start the game: Press any key to start after seeing the title screen.
 Game Over: The game ends when the snake collides with its body or the walls.
+
+
+
 Summary:
 The code implements a terminal-based snake game with basic functionality:
 
