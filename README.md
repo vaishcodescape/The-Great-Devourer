@@ -1,8 +1,9 @@
 # The-Great-Devourer 🐍
+made by vaishcodescape and sam5506
+
 The-Great-Devourer is a fun snake game 🐍 made in pure C++
 this project was a part of our Data Structure Lab Course IT-206 in 2nd Semester
 This is the code for a simple "Snake Game" called "The Great Devourer" written in C++. Here’s an explanation of the various parts of the code:
-
 
 1. Includes and Libraries
 #include <iostream>, #include <cstdlib>, #include <ctime>, #include <thread>, and #include <chrono>: These libraries provide functionalities for input/output, random number generation, time manipulation, and thread control (for controlling game speed).
@@ -32,6 +33,7 @@ Handles the rendering of the game screen.
 Tracks the score and generates food at random positions.
 Handles user input (WASD keys) for changing the snake's direction.
 Updates the game state after each move (checking if the snake collides with itself or with the walls, and updating the score if the snake eats food).
+
 5. Main Function (main)
 Initializes the game by calling displayTitle(), generating the initial game state, and displaying the instructions.
 The game loop starts, where:
@@ -40,6 +42,7 @@ The game state is rendered (renderBoard()).
 The user’s input is processed (processInput()).
 The game is paused briefly between each update using this_thread::sleep_for().
 If the snake collides with itself or the walls, the game ends, and the final score is displayed.
+
 Key Features:
 Snake Movement: The snake moves in four possible directions (up, down, left, right) based on user input (WASD keys).
 Snake Growth: Each time the snake eats food (represented by 'O'), it grows longer, and the score increases.
