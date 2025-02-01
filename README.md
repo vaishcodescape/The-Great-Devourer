@@ -47,13 +47,21 @@ If the snake collides with itself or the walls, the game ends, and the final sco
 
 
 Key Features:
+
 Snake Movement: The snake moves in four possible directions (up, down, left, right) based on user input (WASD keys).
+
 Snake Growth: Each time the snake eats food (represented by 'O'), it grows longer, and the score increases.
+
 Game Over: The game ends if the snake hits the walls or collides with itself.
+
 Rendering: The game is rendered in a text-based grid with the snake and food displayed on the screen using ASCII characters.
+
 Gameplay Instructions:
+
 WASD: Control the snake’s movement (W = up, A = left, S = down, D = right).
+
 Start the game: Press any key to start after seeing the title screen.
+
 Game Over: The game ends when the snake collides with its body or the walls.
 
 
