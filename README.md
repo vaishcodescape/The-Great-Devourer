@@ -78,10 +78,9 @@ The main game loop runs continuously, updating the game state (snake position, f
 - **Platform-specific code**: Handles keypress input differently based on the operating system (Windows vs Linux/macOS).
 
 ---
-
-## Example Output
-When you start the game, the console will display the game board, showing the snake (`*`) and food (`O`). Here’s an example of what it might look like:
-Score: 0
+Example Output
+**When you start the game, the console will display the game board, showing the snake (`*`) and food (`O`). Here’s an example of what it might look like**:
+![My Image](https://github.com/vaishcodescape/The-Great-Devourer/blob/main/images/Screenshot%202025-02-02%20at%2010.11.27%E2%80%AFPM.png)
 ---
 ## Credits
 Created by [vaishcodescape](https://github.com/vaishcodescape) and [sam5506](https://github.com/sam5506).
