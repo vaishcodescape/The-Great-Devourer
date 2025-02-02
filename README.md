@@ -18,10 +18,22 @@ This is a simple implementation of the classic Snake game in C++ called "The Gre
 
 - C++ compiler (e.g., GCC, Clang)
 - A terminal or console to run the game
-- Windows, Linux, or macOS environment
+- Windows, Linux, or macOS environment 
 
 ## How to Play
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/TheGreatDevourerSnakeGame.git
+   git clone https://github.com/vaishcodescape/TheGreatDevourerSnakeGame.git
+   
+2. **Copy**:
+   ```bash
+   cd TheGreatDevourerSnakeGame
+   
+3. **Compile the code**:
+   ```bash
+   g++ -o snake_game main.cpp
+
+4. **Run the game**:
+   ```bash
+   ./snake_game
