@@ -32,7 +32,7 @@ This is a simple implementation of the classic Snake game in C++ called "The Gre
    
 3. **Compile the code**:
    ```bash
-   g++ -o snake_game main.cpp
+   g++ -o snake_game Devourer.cpp
 
 4. **Run the game**:
    ```bash
