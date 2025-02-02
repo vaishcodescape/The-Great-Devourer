@@ -3,7 +3,8 @@
 
 The-Great-Devourer is a fun snake game 🐍 made in pure C++
 this project was a part of our Data Structure Lab Course IT-206 in 2nd Semester
-This is the code for a simple "Snake Game" called "The Great Devourer" written in C++. Here’s an explanation of the various parts of the code:
+
+This is the repository for a simple "Snake Game" called "The Great Devourer" written in C++. Here’s an explanation of the various parts of the code:
 
 1. Includes and Libraries
 #include <iostream>, #include <cstdlib>, #include <ctime>, #include <thread>, and #include <chrono>: These libraries provide functionalities for input/output, random number generation, time manipulation, and thread control (for controlling game speed).
