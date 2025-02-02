@@ -79,6 +79,7 @@ The main game loop runs continuously, updating the game state (snake position, f
 ---
 ## Example Output
 - When you start the game, the console will display the game board, showing the snake (`*`) and food (`O`). Here’s an example of what it might look like:
+  
 ![My Image](https://github.com/vaishcodescape/The-Great-Devourer/blob/main/images/Screenshot%202025-02-02%20at%2010.11.27%E2%80%AFPM.png)
 ---
 ## Credits
