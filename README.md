@@ -2,7 +2,7 @@
 ## made by vaishcodescape(Aditya Vaish) and sam5506(Samyak Shah)
 
 The-Great-Devourer is a fun snake game 🐍 made in pure C++
-this project was a part of our Data Structure Lab Course IT-206 in 2nd Semester
+this project was a part of our Data Structure Lab Course IT-206 in 2nd Semester of B.Tech(Engineering) 
 
 This is the repository for a simple "Snake Game" called "The Great Devourer" written in C++. Here’s an explanation of the various parts of the code:
 
