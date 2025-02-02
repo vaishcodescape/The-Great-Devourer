@@ -81,29 +81,9 @@ The main game loop runs continuously, updating the game state (snake position, f
 
 ## Example Output
 When you start the game, the console will display the game board, showing the snake (`*`) and food (`O`). Here’s an example of what it might look like:
-
-##########################################
-
-*****
-O
-########################################## Score: 0
-
-yaml
-Copy
-
+Score: 0
 ---
-
-## License
-This project is open-source and available under the **MIT License**.
-
 ## Credits
 Created by [vaishcodescape](https://github.com/vaishcodescape) and [sam5506](https://github.com/sam5506).
 
 Enjoy playing **The Great Devourer**!
-
----
-
-## How to Run
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/yourusername/TheGreatDevourerSnakeGame.git
