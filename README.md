@@ -17,25 +17,19 @@ SNAKE_CHAR and FOOD_CHAR: Represent characters used to display the snake and foo
 getKeyPress(): A function that waits for a key press. It handles different ways of capturing key input based on the platform (Windows vs Unix-based).
 clearScreen(): Clears the console screen. It uses cls on Windows and clear on Unix-like systems.
 displayTitle(): Displays the title, "The Great Devourer" along with an ASCII art representation of a snake and some introductory text.
-4. Game Logic
+4. Game Logic:
 The game uses object-oriented programming with three main classes:
+  Coordinates: A simple struct that represents a point in the 2D game space (with x and y coordinates).
+  SnakeGame Class: It manages the snake's body and movement.
+                    It keeps track of the snake’s current length and direction.
+                    It provides methods to update the snake’s position, grow when it eats food, and check for collisions (with the walls or itself).
+  GameBoard Class: Manages the snake and the food.
+                    Handles the rendering of the game screen.
+                    Tracks the score and generates food at random positions.
+                    Handles user input (WASD keys) for changing the snake's direction.
+                    Updates the game state after each move (checking if the snake collides with itself or with the walls, and updating the score if the snake eats food).
 
-Coordinates: A simple struct that represents a point in the 2D game space (with x and y coordinates).
-
-SnakeGame Class:
-
-It manages the snake's body and movement.
-It keeps track of the snake’s current length and direction.
-It provides methods to update the snake’s position, grow when it eats food, and check for collisions (with the walls or itself).
-GameBoard Class:
-
-Manages the snake and the food.
-Handles the rendering of the game screen.
-Tracks the score and generates food at random positions.
-Handles user input (WASD keys) for changing the snake's direction.
-Updates the game state after each move (checking if the snake collides with itself or with the walls, and updating the score if the snake eats food).
-
-5. Main Function (main)
+6. Main Function (main)
 Initializes the game by calling displayTitle(), generating the initial game state, and displaying the instructions.
 The game loop starts, where:
 The game board is updated (updateBoard()).
