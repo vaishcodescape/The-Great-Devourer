@@ -74,7 +74,7 @@ The main game loop runs continuously, updating the game state (snake position, f
 ---
 
 ## Code Structure
-- **main.cpp**: Contains the game’s main logic, including the game loop, input handling, and rendering.
+- **Devourer.cpp**: Contains the game’s main logic, including the game loop, input handling, and rendering.
 - **Platform-specific code**: Handles keypress input differently based on the operating system (Windows vs Linux/macOS).
 ---
 ## Example Output
