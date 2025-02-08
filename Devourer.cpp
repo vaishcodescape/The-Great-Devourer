@@ -26,7 +26,8 @@ const char SNAKE_CHAR = '*';
 const char FOOD_CHAR = 'O';
 
 // Screen dimensions
-int screenWidth = 50, screenHeight = 20;  
+int screenWidth = 50, screenHeight = 20;
+int highestScore = 0;  // Variable to track the highest score
 
 #ifdef _WIN32
 // Function to get keyboard input on Windows
@@ -219,6 +220,7 @@ public:
     // Function to display the current score
     void displayScore() {
         cout << "Score: " << scoreCount << endl;
+        cout << "Highest Score: " << highestScore << endl;  // Display the highest score
     }
 
     // Function to render the game board
@@ -265,7 +267,7 @@ public:
         }
         cout << endl;
 
-        displayScore();  // Display the current score
+        displayScore();  // Display the current and highest score
     }
 
     // Function to update the game board
@@ -302,16 +304,10 @@ public:
     }
 };
 
-// Main function to run the game
-int main() {
-    srand(time(0));  // Seed the random number generator
-    clearScreen();  // Clear the screen
-
-    displayTitle();  // Display the game title
-
+// Function to run the game
+void runGame() {
     GameBoard *game = new GameBoard();  // Create a new game board
-    cout << "Snake Game: Use AWSD to play." << endl;
-    cout << "Press any key to begin..." << endl;
+    cout << "Press any key to start the game..." << endl;
     getKeyPress();  // Wait for the user to press a key
 
     // Game loop
@@ -321,7 +317,29 @@ int main() {
         this_thread::sleep_for(chrono::milliseconds(100));  // Wait for a short period
     }
 
+    // Update the highest score
+    if (game->getCurrentScore() > highestScore) {
+        highestScore = game->getCurrentScore();
+    }
+
     cout << "Game Over! Final Score: " << game->getCurrentScore() << endl;
+    cout << "Highest Score: " << highestScore << endl;  // Display the highest score
+
     delete game;  // Clean up the game board
+}
+
+int main() {
+    srand(time(0));  // Seed the random number generator
+    clearScreen();  // Clear the screen
+
+    displayTitle();  // Display the game title
+
+    // Main game loop
+    while (true) {
+        runGame();  // Run the game
+        cout << "Press any key to restart the game..." << endl;
+        getKeyPress();  // Wait for the user to press a key to restart
+    }
+
     return 0;
 }
