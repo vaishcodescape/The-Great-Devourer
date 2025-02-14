@@ -285,8 +285,11 @@ public:
     }
 
     // Function to process user input
-    void processInput() {
-        int keyPress = getKeyPress();  // Get the key pressed by the user
+    void processInput() {  
+         int keyPress = getKeyPress();  // Get the key pressed by the user
+        if (keyPress != -1) {
+            gameStarted = true;
+        }
         switch (keyPress) {
             case 'a': case 'A':
                 snake->updateDirection(LEFT);  // Move left
