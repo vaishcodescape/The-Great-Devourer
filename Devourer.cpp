@@ -28,6 +28,7 @@ const char FOOD_CHAR = 'O';
 // Screen dimensions
 int screenWidth = 50, screenHeight = 20;
 int highestScore = 0;  // Variable to track the highest score
+bool gameStarted = false;  // Flag to check if the game has started
 
 #ifdef _WIN32
 // Function to get keyboard input on Windows
@@ -285,8 +286,8 @@ public:
     }
 
     // Function to process user input
-    void processInput() {  
-         int keyPress = getKeyPress();  // Get the key pressed by the user
+    void processInput() {
+        int keyPress = getKeyPress();  // Get the key pressed by the user
         if (keyPress != -1) {
             gameStarted = true;
         }
@@ -317,6 +318,9 @@ void runGame() {
     while (game->updateBoard()) {
         game->renderBoard();  // Render the game board
         game->processInput();  // Process user input
+        if (gameStarted) {
+            game->updateBoard();  // Continue moving the snake if the game has started
+        }
         this_thread::sleep_for(chrono::milliseconds(100));  // Wait for a short period
     }
 
