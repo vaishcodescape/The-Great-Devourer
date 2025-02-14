@@ -1,5 +1,5 @@
-//The Great Devourer Snake Game
-//Created by vaishcodescape and sam5506
+// The Great Devourer Snake Game
+// Created by vaishcodescape and sam5506
 
 #include <iostream>
 #include <cstdlib>
@@ -18,15 +18,15 @@
 using namespace std;
 
 #define MAX_SIZE 1000
-const char UP = 'W';
-const char DOWN = 'S';
-const char LEFT = 'A';
-const char RIGHT = 'D';
+const char UP = 'w';
+const char DOWN = 's';
+const char LEFT = 'a';
+const char RIGHT = 'd';
 const char SNAKE_CHAR = '*';
 const char FOOD_CHAR = 'O';
 
 int screenWidth = 50, screenHeight = 20;
-bool gameOver;
+atomic<bool> gameOver(false);
 atomic<char> currentDirection(RIGHT);
 int highestScore = 0;
 
@@ -67,27 +67,25 @@ void loadingScreen() {
     cout << "   T    H   H  E          G   G  R  R    E       A   A    T        D   D  E        V   V  O   O  U   U  R  R    E       R  R   \n";
     cout << "   T    H   H  EEEEE      GGG    R  R    EEEEE   A   A    T        DDDD   EEEEE      V     OOO    UUU   R   R   EEEEE   R   R  \n";
     cout << endl;
-    
     cout << "  ---_ ......._-_--.\n";
-    cout << "      (|\\ /      / /| \\  \\\n";
-    cout << "      /  /     .'  -=-'   `.\n";
-    cout << "     /  /    .'             )\n";
-    cout << "   _/  /   .'        _.)   /\n";
-    cout << "  / o   o        _.-' /  .'\n";
-    cout << "  \\          _.-'    / .'*|\n";
-    cout << "   \\______.-'//    .'.' \\*|\n";
-    cout << "    \\|  \\ | //   .'.' _ |*|\n";
-    cout << "     `   \\|//  .'.'_ _ _|*|\n";
-    cout << "      .  .// .'.' | _ _ \\*|\n";
-    cout << "      \\`-|\\_/ /    \\ _ _ \\*\\\n";
-    cout << "       `/'\\__/      \\ _ _ \\*\\\n";
-    cout << "      /^|            \\ _ _ \\*\n";
-    cout << "     '  `             \\ _ _ \\n";
+    cout << "      (|\\ /      / /| \\  \\  \n";
+    cout << "      /  /     .'  -=-'   `.  \n";
+    cout << "     /  /    .'             )  \n";
+    cout << "   _/  /   .'        _.)   /  \n";
+    cout << "  / o   o        _.-' /  .'  \n";
+    cout << "  \\          _.-'    / .'*|  \n";
+    cout << "   \\______.-'//    .'.' \\*|  \n";
+    cout << "    \\|  \\ | //   .'.' _ |*|  \n";
+    cout << "     `   \\|//  .'.'_ _ _|*|  \n";
+    cout << "      .  .// .'.' | _ _ \\*|  \n";
+    cout << "      \\`-|\\_/ /    \\ _ _ \\*\\  \n";
+    cout << "       `/'\\__/      \\ _ _ \\*\\  \n";
+    cout << "      /^|            \\ _ _ \\*  \n";
+    cout << "     '  `             \\ _ _ \\n  \n";
     
-    cout << endl;
-    cout << "THE GREAT DEVOURER" << endl;
-    cout << "Snake Game" << endl;
-    cout << "Created by vaishcodescape and sam5506"<< endl;
+    cout << "THE GREAT DEVOURER\n";
+    cout << "Snake Game\n";
+    cout << "Created by vaishcodescape and sam5506\n\n";
 
     for (int i = 0; i < 3; i++) {
         this_thread::sleep_for(chrono::milliseconds(500));
@@ -96,6 +94,10 @@ void loadingScreen() {
     }
     cout << "\n";
     this_thread::sleep_for(chrono::milliseconds(500));
+
+    cout << "Press Enter to continue...";
+    cin.ignore(numeric_limits<streamsize>::max(), '\n'); // Flush input buffer
+    cin.get(); // Wait for Enter key
 }
 
 struct Coordinates {
@@ -134,12 +136,19 @@ public:
             case RIGHT: body[0].x++; break;
         }
 
-        for (int i = 1; i < length; i++) {
-            if (body[0].x == body[i].x && body[0].y == body[i].y) return false;
+        // Check for collision with walls
+        if (body[0].x < 1 || body[0].x >= screenWidth - 1 || body[0].y < 1 || body[0].y >= screenHeight - 1) {
+            return false;
         }
 
-        if (body[0].x < 0 || body[0].x >= screenWidth || body[0].y < 0 || body[0].y >= screenHeight) return false;
+        // Check for collision with itself
+        for (int i = 1; i < length; i++) {
+            if (body[0].x == body[i].x && body[0].y == body[i].y) {
+                return false;
+            }
+        }
 
+        // Check if food is eaten
         if (food.x == body[0].x && food.y == body[0].y) {
             body[length] = body[length - 1];
             length++;
@@ -177,14 +186,15 @@ public:
 void processInput() {
     while (!gameOver) {
         int key = getKeyPress();
-        if (key != -1) {
-            currentDirection = toupper(key);
+        if (key == UP || key == DOWN || key == LEFT || key == RIGHT) {
+            currentDirection = key;
         }
     }
 }
 
 void runGame() {
     loadingScreen();
+    
     do {
         gameOver = false;
         SnakeGame snake(screenWidth / 2, screenHeight / 2);
@@ -194,19 +204,21 @@ void runGame() {
         while (!gameOver) {
             if (!snake.move(food)) {
                 gameOver = true;
-                break;
             }
             snake.render(food);
             this_thread::sleep_for(chrono::milliseconds(100));
         }
 
-        inputThread.join();
+        inputThread.detach();  // Ensure thread terminates properly
         highestScore = max(highestScore, snake.getScore());
+        
         cout << "Game Over! Your Score: " << snake.getScore() << "\n";
-
         cout << "Press R to restart or any other key to exit.\n";
-        char choice = toupper(getKeyPress());
-        if (choice != 'R') break;
+
+        char choice;
+        cin >> choice;
+        if (toupper(choice) != 'R') break;
+
     } while (true);
 }
 
